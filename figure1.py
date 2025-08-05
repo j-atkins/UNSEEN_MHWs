@@ -10,6 +10,7 @@ from config import FPaths, UNSEENConfig
 from methods.plotting import conical_map, add_cbar
 from methods.utils import interp_grid, extract_target_days
 
+# script specific params
 PARAMS = {
     "regions_remove": [
         "Skagerrak Kattegat",
