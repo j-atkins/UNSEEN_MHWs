@@ -27,6 +27,8 @@ The [environment.yml](environment.yml) file can be used to create a Conda enviro
 
 `conda env create -f environment.yml`
 
+We also recommended making new `data` and `plot_images` directories (i.e. with `mkdir` on Linux/UNIX and OS X systems) to house the input data and store output figure .png files.
+
 ### 
 
 
