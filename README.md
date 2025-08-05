@@ -10,7 +10,7 @@ Includes code to perform UNSEEN analysis and make all figures as they appear in 
 | ----- | ----- |
 | config.py | Master file for specifying UNSEEN analysis parameters and data file paths in configuration objects. |
 | figure*.py | Manuscript and supplement figure code. |
-| methods/ | Directory containing UNSEEN and utility functions for analysis. |
+| methods/ | Directory containing UNSEEN, plotting and utility functions for analysis. |
 | data/ | Directory where data is stored (currently empty, to be filled by user) |
 | plot_images/ | Directory with figure .png files (currently empty, auto-filled when figure scripts executed). |
 | LICENSE | Software licensing information. |
