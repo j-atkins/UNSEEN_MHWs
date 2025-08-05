@@ -4,6 +4,19 @@ Accompanying Python code for Atkins et al. (2025). Recent European marine heatwa
 
 Includes code to perform UNSEEN analysis and make all figures as they appear in the main text and supplement. 
 
+## Contents
+
+| File | Description |
+| ----- | ----- |
+| config.py | Master file for specifying UNSEEN analysis parameters and data file paths in configuration objects. |
+| figure*.py | Manuscript and supplement figure code. |
+| methods/ | Directory containing UNSEEN and utility functions for analysis. |
+| data/ | Directory where data is stored (currently empty, to be filled by user) |
+| plot_images/ | Directory with figure .png files (currently empty, auto-filled when figure scripts executed). |
+| LICENSE | Software licensing information. |
+| README.md | This file. |
+| environment.yml | YAML file for building Conda enironment. |
+
 ## Set up
 
 This repository can be cloned to your local machine by:
@@ -13,6 +26,8 @@ This repository can be cloned to your local machine by:
 The [environment.yml](environment.yml) file can be used to create a Conda environment with all dependencies by:
 
 `conda env create -f environment.yml`
+
+### 
 
 
 ## Data
