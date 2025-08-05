@@ -14,8 +14,9 @@ class FPaths:
     stem = "/path/to/repo/"
 
     obs_daily_sst = stem + "data/ostia_SST_daily.nc"
-    obs_sst_regmeans = stem + "data/ostia_realtime_19822024_regmeans.nc"
-    model_sst_regmeans = stem + "data/sst_daily_JJA_combined_fullensemble_regmeans.nc"
+    obs_sst_regmeans = stem + "data/ostia_SST_regmeans.nc"
+    model_sst_regmeans = stem + "data/model_SST_fullensemble_regmeans.nc"
 
     shelfmask = stem + "data/shelfmask.nc"
     bathymetry = stem + "data/bathymetry_NWS.nc"
+
