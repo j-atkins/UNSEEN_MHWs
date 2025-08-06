@@ -30,22 +30,18 @@ large_da = large_da.drop_vars({"hindcast", "startdate", "member", "realisation"}
 large_da["realisation"] = np.arange(large_da["realisation"].size)
 
 # load obs
-obs_match = load_sst_dataset(
-    FPaths.obs_sst_regmeans,
-    UNSEENConfig.regions_choices,
-    ("1993-01-01", "2016-12-31"),
-)
+obs_full = load_sst_dataset(FPaths.obs_sst_regmeans, UNSEENConfig.regions_choices)
 
 # ensure regions in model and obs match
-if not np.array_equal(large_da["region"], obs_match["region"]):
+if not np.array_equal(large_da["region"], obs_full["region"]):
     raise ValueError("Regions in model and obs must match.")
 
 # extract seasonal data only from obs (in daily form)
-obs_season_match = extract_target_days(
-    obs_match, np.unique(obs_match.time.dt.year), PARAMS["season_indices"]
+obs_season_full = extract_target_days(
+    obs_full, np.unique(obs_full.time.dt.year), PARAMS["season_indices"]
 )
 
-obs_season_match["time"] = large_da["time"]
+obs_season_full["time"] = large_da["time"]
 
 # =============================================================================
 # pre-processing
@@ -104,17 +100,16 @@ pseudo_timeseries = bootstrap_pseudo_timeseries(
 
 
 # model linear trend slope
-model_sst_trends = pseudo_timeseries.polyfit("year", deg=1)["polyfit_coefficients"].sel(
+model_sst_slopes = pseudo_timeseries.polyfit("year", deg=1)["polyfit_coefficients"].sel(
     degree=1
 )
 
-# obs linear trend slope
-obs_sst_trends = (
-    obs_season_match.mean("time")
+# obs linear trend slope (using full timeseries as this slope is what is used in main analysis)
+obs_sst_slopes = (
+    obs_season_full.mean("time")
     .polyfit("year", deg=1)["polyfit_coefficients"]
     .sel(degree=1)
 )
-
 
 # =============================================================================
 # plot
@@ -128,8 +123,8 @@ fig, axs = plt.subplots(1, 3, figsize=(7.2, 2), dpi=300)
 # per subplot/season
 for i, ax in enumerate(axs.flatten()):
     region = large_da["region"][i]
-    model_dat = model_sst_trends.sel(region=region)
-    obs_dat = obs_sst_trends.sel(region=region)
+    model_dat = model_sst_slopes.sel(region=region)
+    obs_dat = obs_sst_slopes.sel(region=region)
 
     if i == 0:
         color = "#DC647C"
@@ -166,7 +161,7 @@ for i, ax in enumerate(axs.flatten()):
     arr, x = model_dat.data, obs_dat.data
     count_less_equal = count = sum(1 for a in arr if a <= x)
     perc_rank = (count_less_equal / len(arr)) * 100
-    ax.text(x + 0.007, 500, str("%.2f" % float(perc_rank) + "%"), fontsize=10, zorder=6)
+    ax.text(x + 0.009, 500, str("%.2f" % float(perc_rank) + "%"), fontsize=10, zorder=6)
 
     #  formatting
     ax.set_xlabel("Trend ($^\circ$C yr$^{-1}$)", fontsize=10)
