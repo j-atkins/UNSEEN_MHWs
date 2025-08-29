@@ -1,6 +1,6 @@
 ## Summary
 
-Accompanying Python code for Atkins et al. (2025). Recent European marine heatwaves are unprecedented but not unexpected. *Communications Earth & Environment*.
+Accompanying Python code for Atkins et al. (2025). Recent European marine heatwaves are unprecedented but not unexpected. *Communications Earth & Environment*. [In review].
 
 Includes code to perform UNSEEN analysis and make all figures as they appear in the main text and supplement. 
 
