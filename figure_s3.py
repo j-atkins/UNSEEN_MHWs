@@ -345,4 +345,7 @@ for i, ax in enumerate(axs[0]):
     )
 
 plt.tight_layout()
-plt.savefig("plot_images/figure_s3.png", dpi=300, bbox_inches="tight")
+
+plt.show()
+
+# plt.savefig("plot_images/figure_s3.png", dpi=300, bbox_inches="tight")

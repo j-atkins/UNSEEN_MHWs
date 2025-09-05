@@ -124,4 +124,7 @@ for i, ax in enumerate(axs.flatten()):
 axs[-1].legend(loc="lower right", fontsize=8.5, ncols=3).set_zorder(7)
 
 plt.tight_layout()
-plt.savefig("plot_images/figure_s1.png", dpi=300, bbox_inches="tight")
+
+plt.show()
+
+# plt.savefig("plot_images/figure_s1.png", dpi=300, bbox_inches="tight")

@@ -6,9 +6,9 @@ from matplotlib import pyplot as plt
 from datetime import datetime, timedelta
 from matplotlib.colors import LinearSegmentedColormap
 
-from config import FPaths, UNSEENConfig
+from config import FPaths
 from methods.plotting import conical_map, add_cbar
-from methods.utils import interp_grid, extract_target_days
+from methods.utils import interp_grid
 
 # script specific params
 PARAMS = {
@@ -26,27 +26,31 @@ PARAMS = {
 # data
 # =============================================================================
 
-# 1) obs june 2023 anomaly
+# 1) obs
 
-obs_sst = xr.open_dataset(FPaths.obs_daily_sst)["analysed_sst"].sel(
-    time=slice("2023-06-01", "2023-06-30")
-)
+# 2023
+obs_jja2023 = xr.open_dataset(FPaths.obs_daily_sst_jja2023)["analysed_sst"]
+obs_june2023 = obs_jja2023.sel(time=slice("2023-06-01", "2023-06-30"))
 
-obs_clim = xr.open_dataset(FPaths.obs_daily_sst)["analysed_sst"].sel(
+# 1993-2016 period monthly
+obs_clim_period = xr.open_dataset(FPaths.obs_monthly_sst)["analysed_sst"].sel(
     time=slice("1993-01-01", "2016-12-31")
 )
 
-obs_clim_monthly = obs_clim.resample(time="1M").mean("time")
-
-obs_clim_june = obs_clim_monthly.where(
-    obs_clim_monthly.time.dt.month == 6, drop=True
+obs_clim_june = obs_clim_period.where(
+    obs_clim_period.time.dt.month == 6, drop=True
 )  # june only
 
 obs_clim_jmean = obs_clim_june.mean("time")  # june climatology
 
-obs_anom = obs_sst.mean("time") - obs_clim_jmean  # june 2023 anomaly
+# shelf mean JJA daily climatology and 90th percentile (1993-2016)
+shelf_mean_jjaclim = xr.open_dataset(FPaths.shelf_mean_climstats)["daily_climatology"]
+shelf_mean_jja90th = xr.open_dataset(FPaths.shelf_mean_climstats)["percentile_90th"]
 
-## 2) masks, bathymetry etc.
+# june 2023 anomaly
+obs_anom = obs_june2023.mean("time") - obs_clim_jmean  # june 2023 anomaly
+
+# 2) masks, bathymetry etc.
 
 mask_ds = xr.open_dataset(FPaths.shelfmask)
 regions_mask = mask_ds.mask[PARAMS["mask_choice"], :, :]
@@ -95,37 +99,19 @@ for region in regions_names_orig:
         counter += 1
 
 # interpolate shelf mask to obs
-llon, llat = np.meshgrid(obs_clim["longitude"], obs_clim["latitude"])
+llon, llat = np.meshgrid(obs_clim_period["longitude"], obs_clim_period["latitude"])
 lons, lats = (
     xr.DataArray(llon.ravel(), dims="target"),
     xr.DataArray(llat.ravel(), dims="target"),
 )
-mask_interp = interp_grid(shelf_mask, lats, lons, obs_clim)
+mask_interp = interp_grid(shelf_mask, lats, lons, obs_clim_period)
 
 # shelf mean obs for JJA 2023
-obs_jja_2023 = xr.open_dataset(FPaths.obs_june2023_sst)["analysed_sst"].sel(
-    time=slice("2023-06-01", "2023-08-31")
-)
-
 shelf_mean_jja2023 = xr.DataArray(
-    np.where(mask_interp == 1, obs_jja_2023, np.nan),
-    obs_jja_2023.coords,
-    obs_jja_2023.dims,
+    np.where(mask_interp == 1, obs_jja2023, np.nan),
+    obs_jja2023.coords,
+    obs_jja2023.dims,
 ).mean(("latitude", "longitude"))
-
-# get shelf mean climatologies (and 90th percentile)
-obs_match_jja = extract_target_days(
-    obs_clim, np.arange(1993, 2016), UNSEENConfig.target_indices, data_type="map"
-)
-
-obs_match_shelf_mean = xr.DataArray(
-    np.where(mask_interp == 1, obs_match_jja, np.nan),
-    obs_match_jja.coords,
-    obs_match_jja.dims,
-).mean(("latitude", "longitude"))
-
-shelf_mean_jjaclim = obs_match_shelf_mean.mean("year")  # to climatology
-shelf_mean_jja90th = obs_match_shelf_mean.quantile(0.9, "year")  # to 90th percentiles
 
 # =============================================================================
 # plot
@@ -141,10 +127,6 @@ plot_titles = [
 
 # subplots shape
 subplot_grid = (1, 2)
-
-# lat lon min max
-lat_min, lat_max = map_arr["latitude"].min(), map_arr["latitude"].max()
-lon_min, lon_max = map_arr["longitude"].min(), map_arr["longitude"].max()
 
 # cmap
 colors = [
@@ -313,4 +295,6 @@ ax3.axvspan(
 
 ax3.legend(loc="lower right", fontsize=9)
 
-plt.savefig("plot_images/figure1.png", dpi=300, bbox_inches="tight")
+plt.show()
+
+# plt.savefig("plot_images/figure1.png", dpi=300, bbox_inches="tight")

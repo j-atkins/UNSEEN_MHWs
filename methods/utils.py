@@ -38,6 +38,8 @@ def extract_target_days(var, years, season_indices, data_type="regmean"):
     """
     Generalised function for extracting individual days of a season. Now adapted for DJF data as well.
     N.B. does not work on ensemble datasets (i.e. across a `realisation` dimension).
+
+    Also works with monthly data where time dim is datetime-like type.
     """
 
     month_digits = [

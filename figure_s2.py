@@ -172,4 +172,7 @@ for i, ax in enumerate(axs.flatten()):
 
 
 plt.tight_layout()
-plt.savefig("plot_images/figure_s2.png", dpi=300, bbox_inches="tight")
+
+plt.show()
+
+# plt.savefig("plot_images/figure_s2.png", dpi=300, bbox_inches="tight")

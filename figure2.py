@@ -286,4 +286,7 @@ if len(UNSEENConfig.regions_choices) == 3:
     axs[0, 2].legend(loc="upper right", prop={"size": 9})
 
 plt.tight_layout()
-plt.savefig("plot_images/figure2.png", dpi=300, bbox_inches="tight")
+
+plt.show()
+
+# plt.savefig("plot_images/figure2.png", dpi=300, bbox_inches="tight")
