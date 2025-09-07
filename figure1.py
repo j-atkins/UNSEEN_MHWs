@@ -88,15 +88,16 @@ regions_names_mod_processed = [
     regions_names_processed[i] for i in reg_idxs_mod_processed
 ]
 
-# new map array with kept regions
-map_arr = xr.DataArray(
-    np.ones(regions_mask.shape) * np.nan, regions_mask.coords, regions_mask.dims
-)
-counter = 0
-for region in regions_names_orig:
-    if region in regions_names_mod_processed:
-        map_arr[np.where(regions_mask == regions_names_orig.index(region))] = counter
-        counter += 1
+# mask out unwanted regions
+keep_indices = [regions_names_orig.index(r) for r in regions_names_mod_processed]
+mask = np.isin(regions_mask, keep_indices)
+regions_mask_plot = regions_mask.where(mask, np.nan)
+
+# remap regions_mask_plot to consecutive integers starting from 0
+unique_indices = np.sort(np.unique(regions_mask_plot))
+remapped = np.full_like(regions_mask_plot, np.nan)
+for new_idx, old_idx in enumerate(unique_indices):
+    remapped[regions_mask_plot == old_idx] = new_idx
 
 # interpolate shelf mask to obs
 llon, llat = np.meshgrid(obs_clim_period["longitude"], obs_clim_period["latitude"])
@@ -168,22 +169,22 @@ for i, ax in enumerate(axgr):
     ## 1) plot regions
     if i == 0:  # first subplot
         maps = ax.pcolormesh(
-            map_arr["longitude"],
-            map_arr["latitude"],
-            map_arr,
+            regions_mask["longitude"].data,
+            regions_mask["latitude"].data,
+            remapped,
             transform=plot_proj,
             cmap=custom,
-            linewidth=0,
-            alpha=1,
         )
 
         # add hatching in UNSEEN regions (hard coded)
         unseen_masked = np.where(
-            ((map_arr == 1) | (map_arr == 7) | (map_arr == 5)), True, np.nan
+            ((remapped == 1) | (remapped == 7) | (remapped == 5)),
+            True,
+            np.nan,
         )  # central North Sea, Celtic Sea, Irish Shelf
         hatch = ax.contourf(
-            map_arr["longitude"],
-            map_arr["latitude"],
+            regions_mask_plot["longitude"],
+            regions_mask_plot["latitude"],
             unseen_masked,
             transform=plot_proj,
             colors="none",
@@ -297,4 +298,4 @@ ax3.legend(loc="lower right", fontsize=9)
 
 plt.show()
 
-# plt.savefig("plot_images/figure1.png", dpi=300, bbox_inches="tight")
+# fig.savefig("plot_images/figure1.png", dpi=300, bbox_inches="tight")
