@@ -119,7 +119,6 @@ shelf_mean_jja2023 = xr.DataArray(
 # =============================================================================
 
 # subplot titles
-lettering = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"]
 plot_titles = [
     r"$\bf{a}$" + ") NWS sub-regions",
     r"$\bf{b}$" + ") NWS June 2023",
